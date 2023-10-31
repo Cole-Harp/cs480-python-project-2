@@ -2,7 +2,7 @@
 
 import json
 
-from flask import Flask, Response, Request
+from flask import Flask, Response, request
 
 # define the Flask web application
 app = Flask(__name__)
@@ -87,6 +87,103 @@ def get_all_courses():
 
     # Returning the response from here will cause Flask to send it back to the client.
     return resp
+
+@app.get('/api/v1/course/<id>')
+def get_course(id):
+    """REST method to get one specific course"""
+
+    # Generate a Flask response
+    resp = Response()
+    # Set the Content-Type header, to tell the caller that the response is in JSON format.
+    resp.content_type = "application/json"
+
+    # Does the requested course exist in the list?
+    if not exists(id):
+        return Response("Course not found!",404)
+    
+    # Set the data to a JSON representation of the courseList dictionary.
+    resp.data = json.dumps(courseList[id])
+
+    # Returning the response from here will cause Flask to send it back to the client.
+    return resp
+
+@app.put('/api/v1/course/<id>')
+def put_new_course(id):
+    """Add a new course to the course database"""
+
+    # A PUT request is for a *new* request.
+    # If this item already exists in the database, that's an error.
+    if exists(id):
+        return Response("Record already exists!",400)
+    
+    # Validate and get input
+    user_input = get_request_json(request,True)
+    # If we got a response back (i.e. an error), just return it.
+    if type(user_input) is Response:
+        return user_input
+
+    # Good to go!
+    courseList[id] = user_input
+
+    return Response("Created",201) # 201 = Created   
+
+@app.post('/api/v1/course/<id>')
+def update_course(id):
+    """Update data for a course in the course database"""
+
+    # A POST request is for an *existing* request.
+    # If this item doesn't exist in the database, that's an error.
+    if not exists(id):
+        return Response("Record does not exist!",404)
+
+    # Validate and get input
+    user_input = get_request_json(request,False) # allow "bad" JSON because we're going to look for each item individually.
+    # If we got a response back (i.e. an error), just return it.
+    if type(user_input) is Response:
+        return user_input
+
+    try:
+        if 'name' in user_input and user_input['name'] is not None:
+            courseList[id]['name'] = str(user_input['name'])
+        if 'credits' in user_input and user_input['credits'] is not None:
+            courseList[id]['credits'] = int(user_input['credits'])
+    except Exception as e:
+        return Response("Bad data in submission!",400)
+    
+    return Response("Updated!",202) # 202 - "Accepted"
+
+def get_request_json(req,validate=True):
+    """ Convenience method to validate and get the JSON object submitted by the user """
+    
+    # Try to parse the user submission
+    # If not possible return a 400 Bad Request.
+    #try:
+    r = request.get_json()
+    #except Exception as e:
+    #    return Response("JSON not found!",400) 
+    
+    if validate:
+        # Validate the JSON input
+        if not validate_json(r):
+            return Response("Invalid JSON data found!",400) 
+
+    return r
+
+def exists(id):
+    """Convenience method to test if an ID exists in the database"""
+    return id in courseList.keys()
+
+def validate_json(json_obj):
+    if 'name' not in json_obj:
+        return False
+    if 'credits' not in json_obj:
+        return False
+    if type(json_obj['name']) is not str:
+        return False
+    if type(json_obj['credits']) is not int:
+        return False
+    # All test passed...
+    return True
 
 if __name__ == "__main__":
     # Start the Web application.
