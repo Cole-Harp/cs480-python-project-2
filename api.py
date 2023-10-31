@@ -117,7 +117,7 @@ def get_course(id):
 def put_new_course(id):
     """Add a new course to the course database"""
 
-    requestLog.append(f"PUT /api/v1/course/{id} >>>\n{request.get_data()}\n<<<")
+    requestLog.append(f"PUT /api/v1/course/{id} | {'blank' if 'Authorization' not in request.headers else 'Auth:'+request.headers['Authorization']} >>>\n{request.get_data()}\n<<<")
 
     # Check authorization
     auth_result = check_auth(request)
@@ -144,7 +144,7 @@ def put_new_course(id):
 def update_course(id):
     """Update data for a course in the course database"""
 
-    requestLog.append(f"POST /api/v1/course/{id} >>>\n{request.get_data()}\n<<<")
+    requestLog.append(f"POST /api/v1/course/{id} | {'blank' if 'Authorization' not in request.headers else 'Auth:'+request.headers['Authorization']} >>>\n{request.get_data()}\n<<<")
 
     # Check authorization
     auth_result = check_auth(request)
@@ -176,7 +176,7 @@ def update_course(id):
 def delete_course(id):
     """Delete data for a course in the course database. Requires authorization!"""
 
-    requestLog.append(f"DELETE /api/v1/course/{id}")
+    requestLog.append(f"DELETE /api/v1/course/{id} | {'blank' if 'Authorization' not in request.headers else 'Auth:'+request.headers['Authorization']}")
 
     # Check authorization
     auth_result = check_auth(request)
@@ -192,10 +192,8 @@ def delete_course(id):
     return Response("Deleted",202)
 
 def check_auth(req):
-    print(req.headers)
     if 'Authorization' not in req.headers:
         return False
-    print(req.headers['Authorization'])
     if req.headers['Authorization'] == "Bearer thisisnotverysecure":
         return True
     return False
