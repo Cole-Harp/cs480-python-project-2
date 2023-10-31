@@ -7,6 +7,8 @@ from flask import Flask, Response, request
 # define the Flask web application
 app = Flask(__name__)
 
+requestLog = []
+
 courseList = {
     "cis121": {
         "name": "Introduction to Programming",
@@ -78,6 +80,8 @@ courseList = {
 def get_all_courses():
     """REST method to get all courses as a list"""
 
+    requestLog.append(f"GET /api/v1/course")
+
     # Generate a Flask response
     resp = Response()
     # Set the Content-Type header, to tell the caller that the response is in JSON format.
@@ -91,6 +95,8 @@ def get_all_courses():
 @app.get('/api/v1/course/<id>')
 def get_course(id):
     """REST method to get one specific course"""
+
+    requestLog.append(f"GET /api/v1/course/{id}")
 
     # Generate a Flask response
     resp = Response()
@@ -111,10 +117,14 @@ def get_course(id):
 def put_new_course(id):
     """Add a new course to the course database"""
 
+<<<<<<< HEAD
     # Check authorization
     auth_result = check_auth(request)
     if not auth_result:
         return Response("Not authorized",401)
+=======
+    requestLog.append(f"PUT /api/v1/course/{id} >>>\n{request.get_data()}\n<<<")
+>>>>>>> phase2
 
     # A PUT request is for a *new* request.
     # If this item already exists in the database, that's an error.
@@ -136,10 +146,14 @@ def put_new_course(id):
 def update_course(id):
     """Update data for a course in the course database"""
 
+<<<<<<< HEAD
     # Check authorization
     auth_result = check_auth(request)
     if not auth_result:
         return Response("Not authorized",401)
+=======
+    requestLog.append(f"POST /api/v1/course/{id} >>>\n{request.get_data()}\n<<<")
+>>>>>>> phase2
 
     # A POST request is for an *existing* request.
     # If this item doesn't exist in the database, that's an error.
@@ -225,4 +239,12 @@ if __name__ == "__main__":
     # Start the Web application.
     # Using '0.0.0.0' as the address allows external clients (from outside your computer) 
     #   to connect to the API.
-    app.run(host="0.0.0.0")
+    try:
+        app.run(host="0.0.0.0")
+    finally:
+        fh = open("phase2.txt","w")
+        fh.write(json.dumps(courseList))
+        fh.write("\n\n")
+        fh.write("\n".join(requestLog))
+        print("Your work is in phase2.txt")
+        
