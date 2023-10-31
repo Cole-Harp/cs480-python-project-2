@@ -117,14 +117,12 @@ def get_course(id):
 def put_new_course(id):
     """Add a new course to the course database"""
 
-<<<<<<< HEAD
+    requestLog.append(f"PUT /api/v1/course/{id} >>>\n{request.get_data()}\n<<<")
+
     # Check authorization
     auth_result = check_auth(request)
     if not auth_result:
         return Response("Not authorized",401)
-=======
-    requestLog.append(f"PUT /api/v1/course/{id} >>>\n{request.get_data()}\n<<<")
->>>>>>> phase2
 
     # A PUT request is for a *new* request.
     # If this item already exists in the database, that's an error.
@@ -146,14 +144,12 @@ def put_new_course(id):
 def update_course(id):
     """Update data for a course in the course database"""
 
-<<<<<<< HEAD
+    requestLog.append(f"POST /api/v1/course/{id} >>>\n{request.get_data()}\n<<<")
+
     # Check authorization
     auth_result = check_auth(request)
     if not auth_result:
         return Response("Not authorized",401)
-=======
-    requestLog.append(f"POST /api/v1/course/{id} >>>\n{request.get_data()}\n<<<")
->>>>>>> phase2
 
     # A POST request is for an *existing* request.
     # If this item doesn't exist in the database, that's an error.
@@ -179,6 +175,8 @@ def update_course(id):
 @app.delete('/api/v1/course/<id>')
 def delete_course(id):
     """Delete data for a course in the course database. Requires authorization!"""
+
+    requestLog.append(f"DELETE /api/v1/course/{id}")
 
     # Check authorization
     auth_result = check_auth(request)
@@ -242,9 +240,9 @@ if __name__ == "__main__":
     try:
         app.run(host="0.0.0.0")
     finally:
-        fh = open("phase2.txt","w")
+        fh = open("phase3.txt","w")
         fh.write(json.dumps(courseList))
         fh.write("\n\n")
         fh.write("\n".join(requestLog))
-        print("Your work is in phase2.txt")
+        print("Your work is in phase3.txt")
         
