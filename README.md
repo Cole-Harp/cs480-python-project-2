@@ -1,32 +1,23 @@
 # Python API Exercise
 
-Steps for Phase 2:
+Steps for Phase 3:
 
-This version of the API adds two things: POST and PUT requests for adding items to the course list, and another GET method that allows the course ID to be provided.
+This version of the API adds two more things: a DELETE method, and authorization requirements for POST, PUT and DELETE.
 
 1. Run the new version of the API.
-2. In Postman, make a GET request that requests a specific course. For example:
-
-        GET /api/v1/course/cs480
-
-    Run this query using Postman and observe the result - you only get a single course, not a list of courses.
-
-3. Try creating a PUT request to add a new course to the database:
+2. Try creating a PUT request to add a new course to the database:
 
         PUT /api/v1/course/<id>
 
-    Give the course an ID of your choosing. 
+    Note that you can't actually get a new course into the database because you are "Unauthorized" (code 401).
 
-    Your request should include a **body** in JSON format like this:
+3. Now, try again, but this time go to the Auth tab in your request in Postman and set the token type to "JWT Bearer" and enter `thisisnotverysecure` as your bearer token. 
 
-        {
-            "name": "My Great Course",
-            "credits": 8
-        }
-    
-    You need to provide a name for the course as well as a number of credits. The API will validate this information for you - try entering some invalid information.
+    > A **bearer token** is a token that gives permission to the *bearer* - that is, the person, program or service that knows it. If you know the bearer token, you are presumed to have all of the access that bearer token grants!
 
-4. Finally, try making a `POST` request to *change* an existing course in the database:
-        POST /api/v1/course/<id>
+4. Finally, try making a `DELETE` request to *remove* an existing course in the database:
+        
+        DELETE /api/v1/course/<id>
 
-    Try providing *only* a course name or a number of credits.
+    Then, use a `GET` request to ensure that your course has been deleted.
+

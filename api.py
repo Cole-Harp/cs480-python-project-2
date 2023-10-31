@@ -99,7 +99,7 @@ def get_course(id):
 
     # Does the requested course exist in the list?
     if not exists(id):
-        return Response("Course not found!",404)
+        return Response("Course not found",404)
     
     # Set the data to a JSON representation of the courseList dictionary.
     resp.data = json.dumps(courseList[id])
@@ -111,10 +111,15 @@ def get_course(id):
 def put_new_course(id):
     """Add a new course to the course database"""
 
+    # Check authorization
+    auth_result = check_auth(request)
+    if not auth_result:
+        return Response("Not authorized",401)
+
     # A PUT request is for a *new* request.
     # If this item already exists in the database, that's an error.
     if exists(id):
-        return Response("Record already exists!",400)
+        return Response("Record already exists",400)
     
     # Validate and get input
     user_input = get_request_json(request,True)
@@ -131,10 +136,15 @@ def put_new_course(id):
 def update_course(id):
     """Update data for a course in the course database"""
 
+    # Check authorization
+    auth_result = check_auth(request)
+    if not auth_result:
+        return Response("Not authorized",401)
+
     # A POST request is for an *existing* request.
     # If this item doesn't exist in the database, that's an error.
     if not exists(id):
-        return Response("Record does not exist!",404)
+        return Response("Record does not exist",404)
 
     # Validate and get input
     user_input = get_request_json(request,False) # allow "bad" JSON because we're going to look for each item individually.
@@ -148,9 +158,35 @@ def update_course(id):
         if 'credits' in user_input and user_input['credits'] is not None:
             courseList[id]['credits'] = int(user_input['credits'])
     except Exception as e:
-        return Response("Bad data in submission!",400)
+        return Response("Bad data in submission",400)
     
-    return Response("Updated!",202) # 202 - "Accepted"
+    return Response("Updated",202) # 202 - "Accepted"
+
+@app.delete('/api/v1/course/<id>')
+def delete_course(id):
+    """Delete data for a course in the course database. Requires authorization!"""
+
+    # Check authorization
+    auth_result = check_auth(request)
+    if not auth_result:
+        return Response("Not authorized",401)
+    
+    # A POST request is for an *existing* request.
+    # If this item doesn't exist in the database, that's an error.
+    if not exists(id):
+        return Response("Record does not exist",404)
+
+    del(courseList[id])
+    return Response("Deleted",202)
+
+def check_auth(req):
+    print(req.headers)
+    if 'Authorization' not in req.headers:
+        return False
+    print(req.headers['Authorization'])
+    if req.headers['Authorization'] == "Bearer thisisnotverysecure":
+        return True
+    return False
 
 def get_request_json(req,validate=True):
     """ Convenience method to validate and get the JSON object submitted by the user """
@@ -165,7 +201,7 @@ def get_request_json(req,validate=True):
     if validate:
         # Validate the JSON input
         if not validate_json(r):
-            return Response("Invalid JSON data found!",400) 
+            return Response("Invalid JSON data found",400) 
 
     return r
 
