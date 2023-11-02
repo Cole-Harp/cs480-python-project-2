@@ -2,6 +2,8 @@
 
 Steps for Phase 3:
 
+This is an *individual* exercise - every class member should post a submission.
+
 This version of the API adds two more things: a DELETE method, and authorization requirements for POST, PUT and DELETE.
 
 1. Run the new version of the API.
@@ -21,3 +23,6 @@ This version of the API adds two more things: a DELETE method, and authorization
 
     Then, use a `GET` request to ensure that your course has been deleted.
 
+You should now have a `phase3.txt` file. Submit these two files to the "REST API Exercise" dropbox on D2L. 
+
+You can now get into your group and prepare for Phase 4... `git checkout phase4`
