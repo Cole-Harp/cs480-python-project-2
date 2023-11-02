@@ -34,15 +34,15 @@ You will add the following code. *You can't just copy and paste it verbatim - yo
         if not exists(id):
             return Response("Course not found",404)
         # And in the grades list?
-        if id not in gradeList.keys():
+        if id not in courseGrades.keys():
             return Response("Course not found",404)
         
         # Does the student exist in the grade list?
-        if student_id not in gradeList[id]:
+        if student_id not in courseGrades[id]:
             return Response("Student not found",404)
 
         # Return the student's grade
-        return gradeList[id][student_id]
+        return courseGrades[id][student_id]
 
     # Support all of the version 1 API calls under version 2!
     # You can do this by creating shims:
