@@ -13,7 +13,7 @@ This version of the API adds two more things: a DELETE method, and authorization
 
     Note that you can't actually get a new course into the database because you are "Unauthorized" (code 401).
 
-3. Now, try again, but this time go to the Auth tab in your request in Postman and set the token type to "JWT Bearer" and enter `thisisnotverysecure` as your bearer token. 
+3. Now, try again, but this time go to the Auth tab in your request in Postman and set the token type to "Bearer Token" and enter `thisisnotverysecure` as your bearer token. 
 
     > A **bearer token** is a token that gives permission to the *bearer* - that is, the person, program or service that knows it. If you know the bearer token, you are presumed to have all of the access that bearer token grants!
 
