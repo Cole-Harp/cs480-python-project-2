@@ -16,7 +16,7 @@ You will add the following code. *You can't just copy and paste it verbatim - yo
     # Decorate this method with an appropriate VERSION 2 API path.
     def put_grades(id):
 
-        gradeList = get_request_json(request,True)
+        gradeList = get_request_json(request,False)
         """Store a list of student grades. gradeList is a dictionary with key = student ID and value = grade. For example: {"FlintMillion": 'B', "LinChase": 'A'}"""
 
         # Does the requested course exist in the list?
@@ -27,6 +27,7 @@ You will add the following code. *You can't just copy and paste it verbatim - yo
         courseGrades[id] = gradeList
 
     # Decorate this method with an appropriate VERSION 2 API path.
+    @app.get("/api/v2/grade/<id>/<student_id>")
     def get_student_grade(id, student_id):
         """Get a student's grade in a course."""
 
