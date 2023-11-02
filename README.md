@@ -14,8 +14,9 @@ You will add the following code. *You can't just copy and paste it verbatim - yo
     courseGrades = {}
 
     # Decorate this method with an appropriate VERSION 2 API path.
-    def put_grades(id, gradeList):
+    def put_grades(id):
 
+        gradeList = get_request_json(request,True)
         """Store a list of student grades. gradeList is a dictionary with key = student ID and value = grade. For example: {"Flint Million": 'B', "Lin Chase": 'A'}"""
 
         # Does the requested course exist in the list?
