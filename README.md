@@ -1,23 +1,56 @@
 # Python API Exercise
 
-Steps for Phase 3:
+Steps for Phase 4:
 
-This version of the API adds two more things: a DELETE method, and authorization requirements for POST, PUT and DELETE.
+**Phase 4 is a GROUP project. Only one submission per group is required!**
 
-1. Run the new version of the API.
-2. Try creating a PUT request to add a new course to the database:
+You will now *update* the API so that it can support multiple versions.
 
-        PUT /api/v1/course/<id>
+This README contains the code you need to add to create a new method for a version 2 API. **You should also make sure that all current V1 API endpoints will still work when called under V2.** For example, `/api/v2/course/<id>` should still work exactly the same as it does when called with `/api/v1/course/<id>`. 
 
-    Note that you can't actually get a new course into the database because you are "Unauthorized" (code 401).
+You will add the following code. *You can't just copy and paste it verbatim - you'll need to, at a minimum, add the decorator to make the methods endpoints!* You can decide the path to the actual endpoints.
 
-3. Now, try again, but this time go to the Auth tab in your request in Postman and set the token type to "JWT Bearer" and enter `thisisnotverysecure` as your bearer token. 
+    # Add this to the root level of the code
+    courseGrades = {}
 
-    > A **bearer token** is a token that gives permission to the *bearer* - that is, the person, program or service that knows it. If you know the bearer token, you are presumed to have all of the access that bearer token grants!
+    # Decorate this method with an appropriate VERSION 2 API path.
+    def put_grades(id, gradeList):
 
-4. Finally, try making a `DELETE` request to *remove* an existing course in the database:
+        """Store a list of student grades. gradeList is a dictionary with key = student ID and value = grade. For example: {"Flint Million": 'B', "Lin Chase": 'A'}"""
+
+        # Does the requested course exist in the list?
+        if not exists(id):
+            return Response("Course not found",404)
+    
+        # Post the list of student grades
+        courseGrades[id] = gradeList
+
+    # Decorate this method with an appropriate VERSION 2 API path.
+    def get_student_grade(id, student_id):
+        """Get a student's grade in a course."""
+
+        # Does the requested course exist in the list?
+        if not exists(id):
+            return Response("Course not found",404)
+        # And in the grades list?
+        if id not in gradeList.keys():
+            return Response("Course not found",404)
         
-        DELETE /api/v1/course/<id>
+        # Does the student exist in the grade list?
+        if student_id not in gradeList[id]:
+            return Response("Student not found",404)
 
-    Then, use a `GET` request to ensure that your course has been deleted.
+        # Return the student's grade
+        return gradeList[id][student_id]
 
+    # Support all of the version 1 API calls under version 2!
+    # You can do this by creating shims:
+    @app.get('/api/v2/course/<id>')
+    def get_course_v2(id):
+        return get_course(id)
+    
+## Instructions
+
+1. Add the new code to the API per the instructions.
+2. **Test** your new API endpoints using Postman!
+3. Submit your completed updated code to Dropbox. 
