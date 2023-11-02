@@ -17,7 +17,7 @@ You will add the following code. *You can't just copy and paste it verbatim - yo
     def put_grades(id):
 
         gradeList = get_request_json(request,True)
-        """Store a list of student grades. gradeList is a dictionary with key = student ID and value = grade. For example: {"Flint Million": 'B', "Lin Chase": 'A'}"""
+        """Store a list of student grades. gradeList is a dictionary with key = student ID and value = grade. For example: {"FlintMillion": 'B', "LinChase": 'A'}"""
 
         # Does the requested course exist in the list?
         if not exists(id):
