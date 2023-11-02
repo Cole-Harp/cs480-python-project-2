@@ -2,6 +2,8 @@
 
 Steps for Phase 2:
 
+This is an *individual* exercise - every class member should post a submission.
+
 This version of the API adds two things: POST and PUT requests for adding items to the course list, and another GET method that allows the course ID to be provided.
 
 1. Run the new version of the API.
@@ -30,3 +32,7 @@ This version of the API adds two things: POST and PUT requests for adding items 
         POST /api/v1/course/<id>
 
     Try providing *only* a course name or a number of credits.
+
+You should have a file called `phase2.txt` in your program path. Save this file for upload to D2L after phase 3.
+
+Move on to Phase 3 by checking out the `phase3` branch.
