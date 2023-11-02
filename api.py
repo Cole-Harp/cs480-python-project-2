@@ -234,13 +234,6 @@ def validate_json(json_obj):
 if __name__ == "__main__":
     # Start the Web application.
     # Using '0.0.0.0' as the address allows external clients (from outside your computer) 
-    #   to connect to the API.
-    try:
-        app.run(host="0.0.0.0")
-    finally:
-        fh = open("phase3.txt","w")
-        fh.write(json.dumps(courseList))
-        fh.write("\n\n")
-        fh.write("\n".join(requestLog))
-        print("Your work is in phase3.txt")
+    #   to connect to the API.    try:
+    app.run(host="0.0.0.0")
         
