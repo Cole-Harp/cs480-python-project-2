@@ -206,5 +206,7 @@ if __name__ == "__main__":
         fh.write(json.dumps(courseList))
         fh.write("\n\n")
         fh.write("\n".join(requestLog))
+        fh.flush()
+        fh.close()
         print("Your work is in phase2.txt")
         
