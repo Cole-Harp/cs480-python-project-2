@@ -12,7 +12,12 @@ requestLog = []
 courseList = {
     "cis121": {
         "name": "Introduction to Programming",
-        "credits": 4
+        "credits": 4,
+        "gradeList": {
+            "Flint": "A",
+            "Lin": "A",
+
+        }
     },
     "cis122": {
         "name": "Data Structures",
@@ -76,7 +81,9 @@ courseList = {
     },
 }
 
+
 @app.get('/api/v1/course')
+@app.get('/api/v2/course')
 def get_all_courses():
     """REST method to get all courses as a list"""
 
@@ -92,7 +99,9 @@ def get_all_courses():
     # Returning the response from here will cause Flask to send it back to the client.
     return resp
 
+
 @app.get('/api/v1/course/<id>')
+@app.get('/api/v2/course/<id>')
 def get_course(id):
     """REST method to get one specific course"""
 
@@ -105,32 +114,35 @@ def get_course(id):
 
     # Does the requested course exist in the list?
     if not exists(id):
-        return Response("Course not found",404)
-    
+        return Response("Course not found", 404)
+
     # Set the data to a JSON representation of the courseList dictionary.
     resp.data = json.dumps(courseList[id])
 
     # Returning the response from here will cause Flask to send it back to the client.
     return resp
 
+
+@app.put('/api/v2/course/<id>')
 @app.put('/api/v1/course/<id>')
 def put_new_course(id):
     """Add a new course to the course database"""
 
-    requestLog.append(f"PUT /api/v1/course/{id} | {'blank' if 'Authorization' not in request.headers else 'Auth:'+request.headers['Authorization']} >>>\n{request.get_data()}\n<<<")
+    requestLog.append(
+        f"PUT /api/v1/course/{id} | {'blank' if 'Authorization' not in request.headers else 'Auth:' + request.headers['Authorization']} >>>\n{request.get_data()}\n<<<")
 
     # Check authorization
     auth_result = check_auth(request)
     if not auth_result:
-        return Response("Not authorized",401)
+        return Response("Not authorized", 401)
 
     # A PUT request is for a *new* request.
     # If this item already exists in the database, that's an error.
     if exists(id):
-        return Response("Record already exists",400)
-    
+        return Response("Record already exists", 400)
+
     # Validate and get input
-    user_input = get_request_json(request,True)
+    user_input = get_request_json(request, True)
     # If we got a response back (i.e. an error), just return it.
     if type(user_input) is Response:
         return user_input
@@ -138,26 +150,30 @@ def put_new_course(id):
     # Good to go!
     courseList[id] = user_input
 
-    return Response("Created",201) # 201 = Created   
+    return Response("Created", 201)  # 201 = Created
+
 
 @app.post('/api/v1/course/<id>')
+@app.post('/api/v2/course/<id>')
 def update_course(id):
     """Update data for a course in the course database"""
 
-    requestLog.append(f"POST /api/v1/course/{id} | {'blank' if 'Authorization' not in request.headers else 'Auth:'+request.headers['Authorization']} >>>\n{request.get_data()}\n<<<")
+    requestLog.append(
+        f"POST /api/v1/course/{id} | {'blank' if 'Authorization' not in request.headers else 'Auth:' + request.headers['Authorization']} >>>\n{request.get_data()}\n<<<")
 
     # Check authorization
     auth_result = check_auth(request)
     if not auth_result:
-        return Response("Not authorized",401)
+        return Response("Not authorized", 401)
 
     # A POST request is for an *existing* request.
     # If this item doesn't exist in the database, that's an error.
     if not exists(id):
-        return Response("Record does not exist",404)
+        return Response("Record does not exist", 404)
 
     # Validate and get input
-    user_input = get_request_json(request,False) # allow "bad" JSON because we're going to look for each item individually.
+    user_input = get_request_json(request,
+                                  False)  # allow "bad" JSON because we're going to look for each item individually.
     # If we got a response back (i.e. an error), just return it.
     if type(user_input) is Response:
         return user_input
@@ -168,28 +184,32 @@ def update_course(id):
         if 'credits' in user_input and user_input['credits'] is not None:
             courseList[id]['credits'] = int(user_input['credits'])
     except Exception as e:
-        return Response("Bad data in submission",400)
-    
-    return Response("Updated",202) # 202 - "Accepted"
+        return Response("Bad data in submission", 400)
+
+    return Response("Updated", 202)  # 202 - "Accepted"
+
 
 @app.delete('/api/v1/course/<id>')
+@app.delete('/api/v2/course/<id>')
 def delete_course(id):
     """Delete data for a course in the course database. Requires authorization!"""
 
-    requestLog.append(f"DELETE /api/v1/course/{id} | {'blank' if 'Authorization' not in request.headers else 'Auth:'+request.headers['Authorization']}")
+    requestLog.append(
+        f"DELETE /api/v1/course/{id} | {'blank' if 'Authorization' not in request.headers else 'Auth:' + request.headers['Authorization']}")
 
     # Check authorization
     auth_result = check_auth(request)
     if not auth_result:
-        return Response("Not authorized",401)
-    
+        return Response("Not authorized", 401)
+
     # A POST request is for an *existing* request.
     # If this item doesn't exist in the database, that's an error.
     if not exists(id):
-        return Response("Record does not exist",404)
+        return Response("Record does not exist", 404)
 
-    del(courseList[id])
-    return Response("Deleted",202)
+    del (courseList[id])
+    return Response("Deleted", 202)
+
 
 def check_auth(req):
     if 'Authorization' not in req.headers:
@@ -198,26 +218,29 @@ def check_auth(req):
         return True
     return False
 
-def get_request_json(req,validate=True):
+
+def get_request_json(req, validate=True):
     """ Convenience method to validate and get the JSON object submitted by the user """
-    
+
     # Try to parse the user submission
     # If not possible return a 400 Bad Request.
-    #try:
+    # try:
     r = request.get_json()
-    #except Exception as e:
-    #    return Response("JSON not found!",400) 
-    
+    # except Exception as e:
+    #    return Response("JSON not found!",400)
+
     if validate:
         # Validate the JSON input
         if not validate_json(r):
-            return Response("Invalid JSON data found",400) 
+            return Response("Invalid JSON data found", 400)
 
     return r
+
 
 def exists(id):
     """Convenience method to test if an ID exists in the database"""
     return id in courseList.keys()
+
 
 def validate_json(json_obj):
     if 'name' not in json_obj:
@@ -231,16 +254,79 @@ def validate_json(json_obj):
     # All test passed...
     return True
 
+
+# Add this to the root level of the code
+courseGrades = {
+    "cs392w": {
+        "Flint": "A",
+        "Lin": "A",
+        "Carlin": "B",
+        "Von": "C",
+    },
+    "cs5000": {
+        "Flint": "A",
+        "Lin": "A",
+        "Carlin": "B",
+        "Von": "C",
+    },
+}
+
+
+# Decorate this method with an appropriate VERSION 2 API path.
+
+@app.put('/api/v2/course/grades/<id>/')
+def put_grades(id):
+    gradeList = get_request_json(request, False)
+    """Store a list of student grades. gradeList is a dictionary with key = student ID and value = grade. For example: {"FlintMillion": 'B', "LinChase": 'A'}"""
+
+    # Does the requested course exist in the list?
+    if not exists(id):
+        return Response("Course not found", 404)
+
+
+    # Post the list of student grades
+    courseGrades[id] = gradeList
+
+    try:
+        if 'name' in gradeList and gradeList['name'] is not None:
+            courseList[id]['name'] = str(gradeList['name'])
+        if 'grade' in gradeList and gradeList['credits'] is not None:
+            courseList[id]['grade'] = str(gradeList['grade'])
+    except Exception as e:
+        return Response("Bad data in submission", 400)
+
+    return Response("Updated", 202)  # 202 - "Accepted"
+
+
+# Decorate this method with an appropriate VERSION 2 API path.
+@app.get("/api/v2/grade/<id>/<student_id>")
+def get_student_grade(id, student_id):
+    """Get a student's grade in a course."""
+
+    # Does the requested course exist in the list?
+    if not exists(id):
+        return Response("Course not found", 404)
+    # And in the grades list?
+    if id not in courseGrades.keys():
+        return Response("Course not found", 404)
+
+    # Does the student exist in the grade list?
+    if student_id not in courseGrades[id]:
+        return Response("Student not found", 404)
+
+    # Return the student's grade
+    return courseGrades[id][student_id]
+
+
+# Support all of the version 1 API calls under version 2!
+# You can do this by creating shims:
+@app.get('/api/v2/course/<id>')
+def get_course_v2(id):
+    return get_course(id)
+
+
 if __name__ == "__main__":
     # Start the Web application.
-    # Using '0.0.0.0' as the address allows external clients (from outside your computer) 
-    #   to connect to the API.
-    try:
-        app.run(host="0.0.0.0")
-    finally:
-        fh = open("phase3.txt","w")
-        fh.write(json.dumps(courseList))
-        fh.write("\n\n")
-        fh.write("\n".join(requestLog))
-        print("Your work is in phase3.txt")
-        
+    # Using '0.0.0.0' as the address allows external clients (from outside your computer)
+    #   to connect to the API.    try:
+    app.run(host="0.0.0.0")
