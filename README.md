@@ -14,9 +14,10 @@ You will add the following code. *You can't just copy and paste it verbatim - yo
     courseGrades = {}
 
     # Decorate this method with an appropriate VERSION 2 API path.
-    def put_grades(id, gradeList):
+    def put_grades(id):
 
-        """Store a list of student grades. gradeList is a dictionary with key = student ID and value = grade. For example: {"Flint Million": 'B', "Lin Chase": 'A'}"""
+        gradeList = get_request_json(request,False)
+        """Store a list of student grades. gradeList is a dictionary with key = student ID and value = grade. For example: {"FlintMillion": 'B', "LinChase": 'A'}"""
 
         # Does the requested course exist in the list?
         if not exists(id):
@@ -26,6 +27,7 @@ You will add the following code. *You can't just copy and paste it verbatim - yo
         courseGrades[id] = gradeList
 
     # Decorate this method with an appropriate VERSION 2 API path.
+    @app.get("/api/v2/grade/<id>/<student_id>")
     def get_student_grade(id, student_id):
         """Get a student's grade in a course."""
 
@@ -33,15 +35,15 @@ You will add the following code. *You can't just copy and paste it verbatim - yo
         if not exists(id):
             return Response("Course not found",404)
         # And in the grades list?
-        if id not in gradeList.keys():
+        if id not in courseGrades.keys():
             return Response("Course not found",404)
         
         # Does the student exist in the grade list?
-        if student_id not in gradeList[id]:
+        if student_id not in courseGrades[id]:
             return Response("Student not found",404)
 
         # Return the student's grade
-        return gradeList[id][student_id]
+        return courseGrades[id][student_id]
 
     # Support all of the version 1 API calls under version 2!
     # You can do this by creating shims:
